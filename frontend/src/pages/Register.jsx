@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { AUTH_ROUTES } from "../constants/routes";
 import axiosInstance from "../lib/axios";
 
@@ -14,9 +15,10 @@ function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mobile, setMobile] = useState("");
-  const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
+    setLoading(true);
     console.log("called");
     try {
       let response = await axiosInstance.post(AUTH_ROUTES.REGISTER, {
@@ -27,7 +29,12 @@ function SignUp() {
         role,
       });
       console.log(response);
+      toast.success(response.data.message);
+      setLoading(false);
+      navigate("/login");
     } catch (error) {
+      setLoading(false);
+      toast.error(error.response.data.message);
       console.log(error.response.data.message);
     }
   };
@@ -166,13 +173,8 @@ function SignUp() {
           className="w-full bg-orange-500 text-white font-semibold py-3 rounded-lg hover:bg-orange-600 transition-colors text-sm mb-4 hover:cursor-pointer"
           onClick={handleRegister}
         >
-          Continue
+          {loading ? "Loading..." : "Sign Up"}
         </button>
-
-        {/* Error Message */}
-        {err && (
-          <p className="text-red-500 text-sm text-center mb-4">* {err}</p>
-        )}
 
         {/* Divider */}
         <div className="relative my-6">
