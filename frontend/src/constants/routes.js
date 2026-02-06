@@ -8,3 +8,7 @@ export const AUTH_ROUTES = {
   VERIFY_OTP: `${BACKEND_URL}/api/v1/auth/verify-otp`,
   RESET_PASSWORD: `${BACKEND_URL}/api/v1/auth/reset-password`,
 };
+
+export const USER_ROUTES = {
+  CURRENT_USER: `${BACKEND_URL}/api/v1/user/current-user`,
+};

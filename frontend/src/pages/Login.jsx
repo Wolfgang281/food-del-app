@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { AUTH_ROUTES } from "../constants/routes";
 import axiosInstance from "../lib/axios";
+import { setUserData } from "../redux/slices/userSlice";
 // import axios from "axios"
 // import { serverUrl } from '../App';
 // import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
@@ -14,15 +16,13 @@ import axiosInstance from "../lib/axios";
 // import { setUserData } from '../redux/userSlice';
 
 function SignIn() {
-  // const primaryColor = "#ff4d2d";
-  // const hoverColor = "#e64323";
+  const dispatch = useDispatch();
+
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-
-  // const dispatch = useDispatch()
 
   const handleLogin = async () => {
     setLoading(true);
@@ -34,6 +34,7 @@ function SignIn() {
       console.log("result: ", result);
       toast.success(result.data.message);
       // dispatch(setUserData(result.data));
+      dispatch(setUserData(result.data.user));
       setLoading(false);
     } catch (error) {
       console.log("error: ", error);
