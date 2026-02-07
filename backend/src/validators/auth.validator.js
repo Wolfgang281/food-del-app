@@ -40,3 +40,32 @@ export const loginValidation = Joi.object({
     "string.empty": "Password is required",
   }),
 });
+
+export const sendOtpValidation = Joi.object({
+  email: Joi.string().email().lowercase().required().messages({
+    "string.email": "Invalid email format",
+    "string.empty": "Email is required",
+  }),
+});
+
+export const verifyOtpValidation = Joi.object({
+  email: Joi.string().email().lowercase().required().messages({
+    "string.email": "Invalid email format",
+    "string.empty": "Email is required",
+  }),
+  otp: Joi.string().length(6).required().messages({
+    "string.length": "OTP must be 6 characters",
+    "string.empty": "OTP is required",
+  }),
+});
+
+export const resetPasswordValidation = Joi.object({
+  email: Joi.string().email().lowercase().required().messages({
+    "string.email": "Invalid email format",
+    "string.empty": "Email is required",
+  }),
+  password: Joi.string().min(6).max(30).required().messages({
+    "string.min": "Password must be at least 6 characters",
+    "string.empty": "Password is required",
+  }),
+});
