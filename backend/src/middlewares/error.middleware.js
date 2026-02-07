@@ -4,7 +4,9 @@ export const errorHandler = (err, req, res, next) => {
 
   if (err.name === "ValidationError") {
     err.statusCode = 400;
-    err.message = err.message;
+    err.message = `${Object.values(err.errors)
+      .map((value) => value.message)
+      .join(", ")}`;
   } else if (err.code === 11000) {
     let key = Object.keys(err.keyValue);
     key = key[0].toUpperCase();

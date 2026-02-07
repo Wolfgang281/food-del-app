@@ -1,6 +1,9 @@
 import ShopModel from "../models/Shop.model.js";
+import ErrorResponse from "../utils/ApiError.util.js";
 import {
+  deleteFromCloudinary,
   getDataURLFromFile,
+  getPublicIdFromURL,
   uploadToCloudinary,
 } from "../utils/cloudinary.util.js";
 
@@ -11,14 +14,14 @@ export const createShop = async (req, res, next) => {
     let image;
     if (req.file) {
       let dataURL = getDataURLFromFile(req.file);
-      image = uploadToCloudinary(dataURL, next);
+      image = await uploadToCloudinary(dataURL, next);
     }
     const newShop = await ShopModel.create({
       name,
       city,
       address,
       state,
-      image,
+      image: image || "example.jpg",
       owner: userId,
     });
 
@@ -34,28 +37,41 @@ export const createShop = async (req, res, next) => {
 
 export const editShop = async (req, res, next) => {
   try {
-    let shopId = req.params.shopId;
-    let userId = req.user._id;
+    const { shopId } = req.params;
+    const userId = req.user._id;
     const { name, city, address, state } = req.body;
-    let image;
-    if (req.file) {
-      let dataURL = getDataURLFromFile(req.file);
-      image = uploadToCloudinary(dataURL, next);
+
+    const shop = await ShopModel.findOne({ _id: shopId, owner: userId });
+    if (!shop) {
+      return next(
+        new ErrorResponse(
+          "Shop not found or you are not the owner of this shop",
+          404,
+        ),
+      );
     }
-    const updatedShop = await ShopModel.findByIdAndUpdate(
-      shopId,
-      {
-        name,
-        city,
-        address,
-        state,
-        image,
-      },
-      { new: true },
-    ).populate({
+
+    const updateData = { name, city, address, state };
+
+    if (req.file) {
+      const dataURL = getDataURLFromFile(req.file);
+      const newImage = await uploadToCloudinary(dataURL, next);
+
+      if (shop.image?.includes("cloudinary")) {
+        const publicId = getPublicIdFromURL(shop.image);
+        await deleteFromCloudinary(publicId, next);
+      }
+
+      updateData.image = newImage;
+    }
+
+    const updatedShop = await ShopModel.findByIdAndUpdate(shopId, updateData, {
+      new: true,
+    }).populate({
       path: "owner",
-      select: "fullName email mobile ",
+      select: "fullName email mobile",
     });
+
     res.status(200).json({
       success: true,
       message: "Shop updated successfully",

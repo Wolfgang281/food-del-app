@@ -24,3 +24,10 @@ export const deleteFromCloudinary = async (publicId, next) => {
 export const getDataURLFromFile = (file) => {
   return `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
 };
+
+export const getPublicIdFromURL = (url) => {
+  const parts = url.split("/");
+  const filename = parts[parts.length - 1];
+  const publicId = filename.split(".")[0];
+  return `food-delivery-app/${publicId}`;
+};
