@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 // import { ClipLoader } from "react-spinners";
 
 import { toast } from "sonner";
-import { AUTH_ROUTES } from "../constants/routes";
+import { AUTH_ROUTES } from "../constants/endpoints";
 import axiosInstance from "../lib/axios";
 
 function ForgotPassword() {

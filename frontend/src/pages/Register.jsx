@@ -3,7 +3,7 @@ import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { AUTH_ROUTES } from "../constants/routes";
+import { AUTH_ROUTES } from "../constants/endpoints";
 import axiosInstance from "../lib/axios";
 
 function SignUp() {

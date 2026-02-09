@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { USER_ROUTES } from "../constants/routes";
+import { USER_ROUTES } from "../constants/endpoints";
 import axiosInstance from "../lib/axios";
 import { clearUser, setUserData } from "../redux/slices/userSlice";
 

@@ -1,5 +1,5 @@
-import cookieParser from "cookie-parser";
-import cors from "cors";
+import cookieParser from "cookie-parser"; //? for handling cookies
+import cors from "cors"; //? to integrate frontend
 import express from "express";
 
 import { FRONTEND_URL } from "./src/config/index.js";

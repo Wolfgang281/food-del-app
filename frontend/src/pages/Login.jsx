@@ -4,16 +4,9 @@ import { FcGoogle } from "react-icons/fc";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { AUTH_ROUTES } from "../constants/routes";
+import { AUTH_ROUTES } from "../constants/endpoints";
 import axiosInstance from "../lib/axios";
 import { setUserData } from "../redux/slices/userSlice";
-// import axios from "axios"
-// import { serverUrl } from '../App';
-// import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-// import { auth } from '../../firebase';
-// import { ClipLoader } from 'react-spinners';
-// import { useDispatch } from 'react-redux';
-// import { setUserData } from '../redux/userSlice';
 
 function SignIn() {
   const dispatch = useDispatch();

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { BACKEND_URL } from "../constants/routes";
+import { BACKEND_URL } from "../constants/endpoints";
 
 const axiosInstance = axios.create({
   baseURL: BACKEND_URL,

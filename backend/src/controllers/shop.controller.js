@@ -59,6 +59,7 @@ export const editShop = async (req, res, next) => {
 
       if (shop.image?.includes("cloudinary")) {
         const publicId = getPublicIdFromURL(shop.image);
+
         await deleteFromCloudinary(publicId, next);
       }
 
@@ -69,13 +70,67 @@ export const editShop = async (req, res, next) => {
       new: true,
     }).populate({
       path: "owner",
-      select: "fullName email mobile",
     });
 
     res.status(200).json({
       success: true,
       message: "Shop updated successfully",
       shop: updatedShop,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getShop = async (req, res, next) => {
+  let userId = req.user._id;
+  try {
+    const { shopId } = req.params;
+    const shop = await ShopModel.findOne({
+      _id: shopId,
+      owner: userId,
+    })
+      .populate({
+        path: "owner",
+      })
+      .populate({
+        path: "items",
+        options: { sort: { createdAt: -1 } },
+      });
+    if (!shop) {
+      return next(new ErrorResponse("Shop not found", 404));
+    }
+    res.status(200).json({
+      success: true,
+      message: "Shop retrieved successfully",
+      shop,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getShopByCity = async (req, res, next) => {
+  try {
+    const { city } = req.params;
+    const cityPattern = new RegExp(`^${city}$`, "i");
+    const shops = await ShopModel.find({ city: cityPattern })
+      .populate({
+        path: "owner",
+      })
+      .populate({
+        path: "items",
+        options: { sort: { createdAt: -1 } },
+      });
+
+    if (shops.length === 0) {
+      return next(new ErrorResponse(`No shops found in city ${city}`, 404));
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Shops retrieved successfully",
+      shops,
     });
   } catch (error) {
     next(error);

@@ -1,5 +1,10 @@
 import { Router } from "express";
-import { createShop, editShop } from "../controllers/shop.controller.js";
+import {
+  createShop,
+  editShop,
+  getShop,
+  getShopByCity,
+} from "../controllers/shop.controller.js";
 import { authenticate } from "../middlewares/auth.middleware.js";
 import upload from "../middlewares/multer.middleware.js";
 import { validateBody } from "../middlewares/validate.middleware.js";
@@ -25,5 +30,9 @@ shopRouter.patch(
   validateBody(editShopValidation),
   editShop,
 );
+
+shopRouter.get("/get-my-shop", authenticate, getShop);
+
+shopRouter.get("/get-shop/:city", authenticate, getShopByCity);
 
 export default shopRouter;
