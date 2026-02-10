@@ -37,7 +37,7 @@ const shopOrderSchema = new mongoose.Schema(
     },
     subtotal: {
       type: Number,
-      //   required: true,
+      required: true,
     },
     shopOrderItems: [shopOrderItemSchema],
     status: {
@@ -108,5 +108,5 @@ const orderSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-const Order = mongoose.model("Order", orderSchema);
-export default Order;
+const OrderModel = mongoose.model("Order", orderSchema);
+export default OrderModel;
