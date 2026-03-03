@@ -80,22 +80,39 @@ export const logout = (req, res, next) => {
 export const sendOTP = async (req, res, next) => {
   try {
     const { email } = req.body;
+
     const user = await UserModel.findOne({ email });
     if (!user) return next(new ErrorResponse("User not found", 404));
 
+    if (user.otpExpires && user.otpExpires > Date.now()) {
+      const remainingTime = Math.max(0, user.otpExpires - Date.now());
+      const minutes = Math.floor(remainingTime / 60000);
+      const seconds = Math.floor((remainingTime % 60000) / 1000);
+      return next(
+        new ErrorResponse(
+          `Please try again after: ${minutes}m ${seconds}s`,
+          429,
+        ),
+      );
+    }
+
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiryTime = Date.now() + 5 * 60 * 1000;
+
     user.resetOtp = otp;
-    user.otpExpires = Date.now() + 5 * 60 * 1000;
+    user.otpExpires = otpExpiryTime;
     user.isOtpVerified = false;
     await user.save();
 
     await sendOtpMail(email, otp);
+    console.log("hi");
     res.status(200).json({
       success: true,
       message: "OTP sent successfully",
+      otpExpires: otpExpiryTime,
     });
   } catch (error) {
-    next(err);
+    next(error);
   }
 };
 
@@ -108,8 +125,14 @@ export const verifyOTP = async (req, res, next) => {
     if (user.isOtpVerified)
       return next(new ErrorResponse("OTP already verified", 400));
 
-    if (user.otpExpires < Date.now())
+    if (!user.otpExpires || user.otpExpires < Date.now()) {
+      user.resetOtp = undefined;
+      user.otpExpires = undefined;
+      user.isOtpVerified = false;
+      await user.save();
+
       return next(new ErrorResponse("OTP expired", 400));
+    }
 
     if (user.resetOtp !== otp)
       return next(new ErrorResponse("Invalid OTP", 400));
@@ -131,12 +154,19 @@ export const resetPassword = async (req, res, next) => {
     const { email, password } = req.body;
     const user = await UserModel.findOne({ email });
     if (!user) return next(new ErrorResponse("User not found", 404));
-
-    if (!user.isOtpVerified)
-      return next(new ErrorResponse("OTP not verified", 400));
+    if (
+      !user.isOtpVerified ||
+      !user.otpExpires ||
+      user.otpExpires < Date.now()
+    ) {
+      return next(new ErrorResponse("OTP session expired", 400));
+    }
 
     user.password = password;
     user.isOtpVerified = false;
+    user.resetOtp = undefined;
+    user.otpExpires = undefined;
+
     await user.save();
 
     res.status(200).json({

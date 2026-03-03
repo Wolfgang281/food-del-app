@@ -60,6 +60,8 @@ userSchema.pre("save", async function (next) {
 userSchema.methods.comparePassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
+userSchema.index({ otpExpires: 1 }, { expireAfterSeconds: 300 });
+userSchema.index({ resetOtp: 1 }, { expireAfterSeconds: 300 });
 
 userSchema.index({ location: "2dsphere" });
 
