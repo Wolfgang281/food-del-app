@@ -2,6 +2,7 @@ import express from "express";
 
 import {
   login,
+  logout,
   register,
   resetPassword,
   sendOTP,
@@ -9,6 +10,8 @@ import {
 } from "../controllers/auth.controller.js";
 
 import { validateBody } from "../middlewares/validate.middleware.js";
+
+import { authenticate } from "../middlewares/auth.middleware.js";
 
 import {
   loginValidation,
@@ -33,5 +36,7 @@ authRouter.post(
   validateBody(resetPasswordValidation),
   resetPassword,
 );
+
+authRouter.post("/logout", authenticate, logout);
 
 export default authRouter;

@@ -5,6 +5,7 @@ export const validateBody = (schema) => {
     const { error, value } = schema.validate(
       req.body /* { abortEarly: false } */,
     );
+    console.log("error: ", error);
     if (error) {
       let errors = error.details.map((err) => err.message);
       return next(new ErrorResponse(errors.join(", "), 400));

@@ -45,6 +45,11 @@ const userSchema = new mongoose.Schema(
       type: { type: String, enum: ["Point"], default: "Point" },
       coordinates: { type: [Number], default: [0, 0] },
     },
+    clerkId: {
+      type: String,
+      unique: true,
+      sparse: true, // ✅ allows null for email/password users
+    },
   },
   { timestamps: true },
 );

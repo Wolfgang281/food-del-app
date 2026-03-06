@@ -1,3 +1,4 @@
+import { useSignIn } from "@clerk/react";
 import { useState } from "react";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
@@ -10,6 +11,7 @@ import { setUserData } from "../redux/slices/userSlice";
 
 function SignIn() {
   const dispatch = useDispatch();
+  const { signIn } = useSignIn();
 
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -31,7 +33,23 @@ function SignIn() {
     } catch (error) {
       console.log("error: ", error);
       toast.error(error?.response?.data?.message);
+      console.log("error?.response?.data: ", error?.response);
       setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      console.log(1);
+      let op = await signIn.create({
+        strategy: "oauth_google",
+        redirectUrl: `${window.location.origin}/sso-callback`,
+        actionCompleteRedirectUrl: `${window.location.origin}/`,
+      });
+      console.log("Google login result: ", op);
+    } catch (error) {
+      console.error("Google login error:", error);
+      toast.error(error.message);
     }
   };
 
@@ -225,7 +243,15 @@ function SignIn() {
           </div>
 
           {/* Google */}
-          <button className="w-full bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:scale-[0.98] text-stone-700 text-sm font-medium py-3.5 rounded-xl flex items-center justify-center gap-2.5 transition-all duration-200 cursor-pointer mb-7">
+          <button
+            className="w-full bg-white border border-stone-200 hover:border-stone-300 
+  hover:bg-stone-50 active:scale-[0.98] text-stone-700 text-sm font-medium 
+  py-3.5 rounded-xl flex items-center justify-center gap-2.5 
+  transition-all duration-200 cursor-pointer mb-7"
+            onClick={handleGoogleLogin}
+            // disabled={!isLoaded}
+            type="button"
+          >
             <FcGoogle size={18} />
             Sign in with Google
           </button>

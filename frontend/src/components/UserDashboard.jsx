@@ -1,5 +1,11 @@
+import Navbar from "./Navbar";
+
 const UserDashboard = () => {
-  return <div>UserDashboard</div>;
+  return (
+    <div>
+      <Navbar />
+    </div>
+  );
 };
 
 export default UserDashboard;

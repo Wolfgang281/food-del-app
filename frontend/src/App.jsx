@@ -1,19 +1,22 @@
 import { useSelector } from "react-redux";
 import { Navigate, Route, Routes } from "react-router-dom";
+import { AuthLoader } from "./components/AuthLoader";
+import useGetCity from "./hooks/useGetCity";
 import useGetCurrentUser from "./hooks/useGetCurrentUser";
 import ForgotPassword from "./pages/ForgotPassword";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import SSOCallback from "./pages/SSOCallback";
 
 const App = () => {
   useGetCurrentUser();
+  useGetCity();
 
   const { userData, loading } = useSelector((state) => state.user);
-  console.log("userData: ", userData);
 
   if (loading) {
-    return <div>Checking auth...</div>;
+    return <AuthLoader />;
   }
 
   return (
@@ -34,6 +37,7 @@ const App = () => {
         path="/"
         element={userData ? <Home /> : <Navigate to={"/login"} />}
       />
+      <Route path="/sso-callback" element={<SSOCallback />} />
     </Routes>
   );
 };

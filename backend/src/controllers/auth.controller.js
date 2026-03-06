@@ -180,22 +180,26 @@ export const resetPassword = async (req, res, next) => {
 
 export const googleAuth = async (req, res, next) => {
   const { fullName, mobile, email } = req.body;
+  try {
+    let user = await UserModel.findOne({ email });
+    if (!user) {
+      user = await UserModel.create({ fullName, mobile, email, role: "user" });
+    }
 
-  const user = await UserModel.findOne({ email });
-  if (!user)
-    user = await UserModel.create({ fullName, mobile, email, role: "user" });
+    const token = generateToken(user._id);
+    res.cookie("token", token, {
+      secure: false,
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+    });
 
-  const token = generateToken(user._id);
-  res.cookie("token", token, {
-    secure: false,
-    sameSite: "strict",
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-    httpOnly: true,
-  });
-
-  res.status(200).json({
-    success: true,
-    message: "User logged in successfully",
-    user,
-  });
+    res.status(200).json({
+      success: true,
+      message: "User logged in successfully",
+      user,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
