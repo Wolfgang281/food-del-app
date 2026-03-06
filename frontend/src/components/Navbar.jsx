@@ -10,33 +10,28 @@ import { AUTH_ROUTES } from "../constants/endpoints";
 import axiosInstance from "../lib/axios";
 import { setUserData } from "../redux/slices/userSlice";
 
-function Nav() {
+function Navbar() {
   const [showSearch, setShowSearch] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
 
   const dispatch = useDispatch();
 
   const { userData, city } = useSelector((state) => state.user);
-  console.log("userData: ", userData);
-
-  // ── mock data for UI preview only ──
-  const userData1 = { fullName: "Rahul Sharma", role: "user" };
+  const { shopData } = useSelector((state) => state.owner);
 
   const handleLogout = async () => {
     try {
       let response = await axiosInstance.post(AUTH_ROUTES.LOGOUT);
-      console.log("response: ", response);
+
       dispatch(setUserData(null));
-      // toast.success("Logged );
+      toast.success(response.data.message);
     } catch (error) {
-      console.log(error);
-      toast.error();
+      //   console.log(error);
+      toast.error(error?.response?.data?.message);
     }
   };
 
   const cartItems = [1, 2, 3];
-  const myShopData = true;
-  const role = userData1.role; // "user" | "owner" | "deliveryBoy"
 
   return (
     <>
@@ -49,7 +44,7 @@ function Nav() {
           </h1>
 
           {/* Search bar — desktop only, user only */}
-          {role === "user" && (
+          {userData.role === "user" && (
             <div className="hidden md:flex flex-1 max-w-sm items-center bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 gap-2 hover:border-orange-300 transition-colors">
               <div className="flex items-center gap-1.5 pr-3 border-r border-stone-200 shrink-0">
                 <FaLocationDot size={13} className="text-orange-500" />
@@ -69,7 +64,7 @@ function Nav() {
           {/* Right actions */}
           <div className="flex items-center gap-2 sm:gap-3">
             {/* Mobile search toggle — user only */}
-            {role === "user" && (
+            {userData.role === "user" && (
               <button
                 className="md:hidden w-9 h-9 flex items-center justify-center rounded-full bg-orange-50 text-orange-500 hover:bg-orange-100 transition-colors cursor-pointer"
                 onClick={() => setShowSearch((p) => !p)}
@@ -83,7 +78,7 @@ function Nav() {
             )}
 
             {/* Owner: Add Item */}
-            {role === "owner" && myShopData && (
+            {userData.role === "owner" && shopData && (
               <>
                 <button className="hidden md:flex items-center gap-1.5 bg-orange-50 text-orange-500 hover:bg-orange-100 text-sm font-medium px-3.5 py-2 rounded-full transition-colors cursor-pointer">
                   <FaPlus size={13} />
@@ -96,7 +91,7 @@ function Nav() {
             )}
 
             {/* Owner: My Orders */}
-            {role === "owner" && (
+            {userData.role === "owner" && (
               <>
                 <button className="hidden md:flex items-center gap-1.5 bg-orange-50 text-orange-500 hover:bg-orange-100 text-sm font-medium px-3.5 py-2 rounded-full transition-colors cursor-pointer">
                   <TbReceipt2 size={16} />
@@ -109,7 +104,7 @@ function Nav() {
             )}
 
             {/* User: Cart */}
-            {role === "user" && (
+            {userData.role === "user" && (
               <button className="relative w-9 h-9 flex items-center justify-center rounded-full bg-orange-50 text-orange-500 hover:bg-orange-100 transition-colors cursor-pointer">
                 <FiShoppingCart size={17} />
                 {cartItems.length > 0 && (
@@ -121,7 +116,7 @@ function Nav() {
             )}
 
             {/* User: My Orders — desktop */}
-            {role === "user" && (
+            {userData.role === "user" && (
               <button className="hidden md:flex items-center gap-1.5 bg-orange-50 text-orange-500 hover:bg-orange-100 text-sm font-medium px-3.5 py-2 rounded-full transition-colors cursor-pointer">
                 <TbReceipt2 size={16} />
                 My Orders
@@ -140,7 +135,7 @@ function Nav() {
       </header>
 
       {/* ── Mobile search bar (drops below nav) ── */}
-      {showSearch && role === "user" && (
+      {showSearch && userData.role === "user" && (
         <div className="md:hidden fixed top-16 left-0 w-full z-9998 bg-white border-b border-stone-100 shadow-sm px-4 py-3">
           <div className="flex items-center bg-stone-50 border border-stone-200 rounded-xl px-3 py-2.5 gap-2">
             <div className="flex items-center gap-1.5 pr-3 border-r border-stone-200 shrink-0">
@@ -168,7 +163,7 @@ function Nav() {
           </p>
 
           {/* My Orders — mobile, user only */}
-          {role === "user" && (
+          {userData.role === "user" && (
             <button className="md:hidden text-left text-sm text-stone-600 hover:text-orange-500 font-medium py-1.5 transition-colors cursor-pointer">
               My Orders
             </button>
@@ -189,4 +184,4 @@ function Nav() {
   );
 }
 
-export default Nav;
+export default Navbar;

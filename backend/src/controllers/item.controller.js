@@ -14,7 +14,7 @@ export const addItem = async (req, res, next) => {
     let userId = req.user._id;
     let image;
 
-    let shop = await ShopModel.findById(shopId);
+    let shop = await ShopModel.findByOne({ owner: userId /* _id: shopId */ });
     if (!shop)
       return next(new ErrorResponse(`Shop with ID ${shopId} not found`, 404));
 

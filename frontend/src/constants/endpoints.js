@@ -13,3 +13,7 @@ export const AUTH_ROUTES = {
 export const USER_ROUTES = {
   CURRENT_USER: `${BACKEND_URL}/api/v1/user/current-user`,
 };
+
+export const SHOP_ROUTES = {
+  GET_MY_SHOP: `${BACKEND_URL}/api/v1/shop/get-my-shop`,
+};
