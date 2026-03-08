@@ -1,6 +1,7 @@
 import express from "express";
 
 import {
+  googleAuth,
   login,
   logout,
   register,
@@ -38,5 +39,7 @@ authRouter.post(
 );
 
 authRouter.post("/logout", authenticate, logout);
+
+authRouter.post("/login-with-sso", googleAuth);
 
 export default authRouter;

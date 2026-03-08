@@ -4,6 +4,7 @@ import { AuthLoader } from "./components/AuthLoader";
 import useGetCity from "./hooks/useGetCity";
 import useGetCurrentUser from "./hooks/useGetCurrentUser";
 import useGetMyShop from "./hooks/useGetMyShop";
+import AddItem from "./pages/AddItem";
 import CreateAndEditShop from "./pages/CreateAndEditShop";
 import ForgotPassword from "./pages/ForgotPassword";
 import Home from "./pages/Home";
@@ -48,6 +49,11 @@ const App = () => {
       <Route
         path="/create-edit-shop"
         element={userData ? <CreateAndEditShop /> : <Navigate to={"/login"} />}
+      />
+
+      <Route
+        path="/add-item"
+        element={userData ? <AddItem /> : <Navigate to={"/login"} />}
       />
     </Routes>
   );

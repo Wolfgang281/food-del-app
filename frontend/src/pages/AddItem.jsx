@@ -3,73 +3,75 @@ import { FaUtensils } from "react-icons/fa";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { SHOP_ROUTES } from "../constants/endpoints";
+import { ITEM_ROUTES } from "../constants/endpoints";
 import axiosInstance from "../lib/axios";
 import { setShopData } from "../redux/slices/ownerSlice";
 
-function CreateAndEditShop() {
+// ── Matches mongoose enum exactly ────────────────────────────────
+// enum: ["snacks","main-course","desserts","pizza","burgers",
+//        "sandwiches","south-indian","north-indian","chinese","fast-food","others"]
+const FOOD_CATEGORIES = [
+  { label: "Snacks", value: "snacks" },
+  { label: "Main Course", value: "main-course" },
+  { label: "Desserts", value: "desserts" },
+  { label: "Pizza", value: "pizza" },
+  { label: "Burgers", value: "burgers" },
+  { label: "Sandwiches", value: "sandwiches" },
+  { label: "South Indian", value: "south-indian" },
+  { label: "North Indian", value: "north-indian" },
+  { label: "Chinese", value: "chinese" },
+  { label: "Fast Food", value: "fast-food" },
+  { label: "Others", value: "others" },
+];
+
+// ── Matches mongoose enum exactly ────────────────────────────────
+// enum: ["veg", "non-veg"]
+const FOOD_TYPES = [
+  { val: "veg", label: "🥦 Veg" },
+  { val: "non-veg", label: "🍗 Non-Veg" },
+];
+
+function AddItem() {
   const navigate = useNavigate();
-  const fileRef = useRef(null);
-
-  const { shopData } = useSelector((state) => state.owner);
-  const {
-    city: userCity,
-    state: userState,
-    address: userAddress,
-  } = useSelector((state) => state.user);
-
-  const [name, setName] = useState(shopData ? shopData.name : "");
-  const [city, setCity] = useState(shopData ? shopData.city : userCity || "");
-  const [state, setState] = useState(
-    shopData ? shopData.state : userState || "",
-  );
-  const [address, setAddress] = useState(
-    shopData ? shopData.address : userAddress || "",
-  );
-  const [previewImage, setPreviewImage] = useState(
-    shopData ? shopData.image : null,
-  );
-  const [uploadedImage, setUploadedImage] = useState(null);
-
-  // ✅ Fix: was `const [loading] = useState(false)` — missing setter
-  const [loading, setLoading] = useState(false);
-
   const dispatch = useDispatch();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true); // ✅ start loader
-    try {
-      const formData = new FormData();
-      formData.append("name", name);
-      formData.append("city", city);
-      formData.append("state", state);
-      formData.append("address", address);
-      if (uploadedImage) formData.append("image", uploadedImage);
+  const { shopData } = useSelector((state) => state.owner);
 
-      const { data } = shopData
-        ? await axiosInstance.patch(
-            SHOP_ROUTES.EDIT_SHOP(shopData._id),
-            formData,
-          )
-        : await axiosInstance.post(SHOP_ROUTES.CREATE_SHOP, formData);
+  const fileRef = useRef(null);
 
-      dispatch(setShopData(data.shop));
-      toast.success(data.message);
-      navigate("/");
-    } catch (error) {
-      console.log(error.response.data);
-      toast.error(error.response?.data?.message);
-    } finally {
-      setLoading(false); // ✅ stop loader always
-    }
-  };
+  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState(0);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const [category, setCategory] = useState(""); // sends e.g. "main-course"
+  const [foodType, setFoodType] = useState("veg"); // sends "veg" | "non-veg"
 
   const handleImage = (e) => {
     const file = e.target.files[0];
     setUploadedImage(file);
     setPreviewImage(URL.createObjectURL(file));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("category", category); // e.g. "main-course"
+      formData.append("foodType", foodType); // "veg" | "non-veg"
+      formData.append("price", price);
+      formData.append("shopId", shopData._id);
+      if (uploadedImage) formData.append("image", uploadedImage);
+      const result = await axiosInstance.post(ITEM_ROUTES.ADD_ITEM, formData);
+      dispatch(setShopData(result.data.shop));
+      navigate("/");
+    } catch (error) {
+      console.log(error.response);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -95,27 +97,25 @@ function CreateAndEditShop() {
         {/* Header */}
         <div className="mb-8">
           <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-orange-400 mb-1">
-            {shopData ? "Update details" : "New restaurant"}
+            Menu Management
           </p>
           <h1 className="text-2xl font-bold text-stone-900 tracking-tight">
-            {shopData ? "Edit your shop" : "List your shop"}
+            Add food item
           </h1>
           <p className="mt-1.5 text-sm text-stone-400">
-            {shopData
-              ? "Update your restaurant information below."
-              : "Fill in the details to get listed on OrderKaro."}
+            Fill in the details to add a new item to your menu.
           </p>
         </div>
 
         <form className="space-y-5" onSubmit={handleSubmit}>
-          {/* Shop Name */}
+          {/* Name */}
           <div>
             <label className="block text-[10px] font-semibold text-stone-400 uppercase tracking-[0.15em] mb-2">
-              Shop Name
+              Item Name
             </label>
             <input
               type="text"
-              placeholder="e.g. Spice Garden"
+              placeholder="e.g. Paneer Butter Masala"
               className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-100 transition-all duration-200"
               onChange={(e) => setName(e.target.value)}
               value={name}
@@ -125,7 +125,7 @@ function CreateAndEditShop() {
           {/* Image upload */}
           <div>
             <label className="block text-[10px] font-semibold text-stone-400 uppercase tracking-[0.15em] mb-2">
-              Shop Image
+              Food Image
             </label>
             <div
               onClick={() => fileRef.current.click()}
@@ -139,7 +139,7 @@ function CreateAndEditShop() {
                 />
               ) : (
                 <div className="flex flex-col items-center gap-2 text-stone-300">
-                  <FaUtensils size={22} />
+                  <FaUtensils size={20} />
                   <span className="text-xs font-medium">
                     Click to upload image
                   </span>
@@ -162,46 +162,63 @@ function CreateAndEditShop() {
             />
           </div>
 
-          {/* City + State */}
+          {/* Price + Category */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-[10px] font-semibold text-stone-400 uppercase tracking-[0.15em] mb-2">
-                City
+                Price (₹)
               </label>
               <input
-                type="text"
-                placeholder="Gurugram"
+                type="number"
+                placeholder="0"
+                min={0}
                 className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-100 transition-all duration-200"
-                onChange={(e) => setCity(e.target.value)}
-                value={city}
+                onChange={(e) => setPrice(e.target.value)}
+                value={price}
               />
             </div>
             <div>
               <label className="block text-[10px] font-semibold text-stone-400 uppercase tracking-[0.15em] mb-2">
-                State
+                Category
               </label>
-              <input
-                type="text"
-                placeholder="Haryana"
-                className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-100 transition-all duration-200"
-                onChange={(e) => setState(e.target.value)}
-                value={state}
-              />
+              <select
+                className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm text-stone-800 focus:outline-none focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-100 transition-all duration-200 cursor-pointer"
+                onChange={(e) => setCategory(e.target.value)}
+                value={category}
+              >
+                <option value="" disabled>
+                  Select…
+                </option>
+                {FOOD_CATEGORIES.map(({ label, value }) => (
+                  <option value={value} key={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
-          {/* Address */}
+          {/* Food type toggle */}
           <div>
-            <label className="block text-[10px] font-semibold text-stone-400 uppercase tracking-[0.15em] mb-2">
-              Address
+            <label className="block text-[10px] font-semibold text-stone-400 uppercase tracking-[0.15em] mb-3">
+              Food Type
             </label>
-            <input
-              type="text"
-              placeholder="Full shop address"
-              className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-100 transition-all duration-200"
-              onChange={(e) => setAddress(e.target.value)}
-              value={address}
-            />
+            <div className="flex bg-stone-100 rounded-xl p-1 gap-1">
+              {FOOD_TYPES.map(({ val, label }) => (
+                <button
+                  key={val}
+                  type="button"
+                  onClick={() => setFoodType(val)}
+                  className={`flex-1 py-2.5 text-xs font-semibold rounded-lg transition-all duration-200 cursor-pointer ${
+                    foodType === val
+                      ? "bg-white text-orange-500 shadow-sm shadow-stone-200"
+                      : "text-stone-400 hover:text-stone-600"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Submit */}
@@ -231,12 +248,10 @@ function CreateAndEditShop() {
                     d="M4 12a8 8 0 018-8v8z"
                   />
                 </svg>
-                {shopData ? "Saving changes…" : "Creating shop…"}
+                Adding item…
               </span>
-            ) : shopData ? (
-              "Save Changes →"
             ) : (
-              "Create Shop →"
+              "Add Item →"
             )}
           </button>
         </form>
@@ -245,4 +260,4 @@ function CreateAndEditShop() {
   );
 }
 
-export default CreateAndEditShop;
+export default AddItem;

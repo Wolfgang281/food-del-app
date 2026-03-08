@@ -39,6 +39,14 @@ export const addItemValidation = Joi.object({
       "any.required": "Category is required",
       "string.empty": "Category is required",
     }),
+
+  shopId: Joi.string().hex().length(24).required().messages({
+    "string.base": "Shop ID must be a string",
+    "string.empty": "Shop ID is required",
+    "string.length": "Shop ID must be 24 characters long",
+    "string.hex": "Shop ID must be a valid hexadecimal",
+    "any.required": "Shop ID is required",
+  }),
 });
 
 export const editItemValidation = Joi.object({

@@ -9,12 +9,12 @@ import {
 
 export const addItem = async (req, res, next) => {
   try {
-    let { name, foodType, price, category } = req.body;
-    let shopId = req.params.shopId;
+    let { name, foodType, price, category, shopId } = req.body;
+
     let userId = req.user._id;
     let image;
 
-    let shop = await ShopModel.findByOne({ owner: userId /* _id: shopId */ });
+    let shop = await ShopModel.findOne({ owner: userId });
     if (!shop)
       return next(new ErrorResponse(`Shop with ID ${shopId} not found`, 404));
 

@@ -39,17 +39,26 @@ function SignIn() {
   };
 
   const handleGoogleLogin = async () => {
+    setLoading(true);
     try {
-      console.log(1);
-      let op = await signIn.create({
+      const result = await signIn.create({
         strategy: "oauth_google",
         redirectUrl: `${window.location.origin}/sso-callback`,
-        actionCompleteRedirectUrl: `${window.location.origin}/`,
       });
-      console.log("Google login result: ", op);
+
+      if (result.status === "complete") {
+        const ssoResult = await axiosInstance.post(AUTH_ROUTES.LOGIN_WITH_SSO, {
+          clerkId: result.createdSessionId,
+        });
+        toast.success(ssoResult.data.message);
+        dispatch(setUserData(ssoResult.data.user));
+        navigate("/");
+      }
     } catch (error) {
       console.error("Google login error:", error);
-      toast.error(error.message);
+      toast.error(error.message || "Google login failed");
+    } finally {
+      setLoading(false);
     }
   };
 

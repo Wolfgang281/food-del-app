@@ -8,6 +8,7 @@ export const AUTH_ROUTES = {
   VERIFY_OTP: `${BACKEND_URL}/api/v1/auth/verify-otp`,
   RESET_PASSWORD: `${BACKEND_URL}/api/v1/auth/reset-password`,
   LOGOUT: `${BACKEND_URL}/api/v1/auth/logout`,
+  LOGIN_WITH_SSO: `${BACKEND_URL}/api/v1/auth/login-with-sso`,
 };
 
 export const USER_ROUTES = {
@@ -20,4 +21,12 @@ export const SHOP_ROUTES = {
   EDIT_SHOP: (id) => `${BACKEND_URL}/api/v1/shop/edit/${id}`,
   GET_SHOP_BY_ID: (id) => `${BACKEND_URL}/api/v1/shop/get-shop/${id}`,
   GET_ALL_SHOPS: `${BACKEND_URL}/api/v1/shop/get-all-shops`,
+};
+
+export const ITEM_ROUTES = {
+  ADD_ITEM: `${BACKEND_URL}/api/v1/item/add`,
+  EDIT_ITEM: (id) => `${BACKEND_URL}/api/v1/item/edit/${id}`,
+  GET_ITEM_BY_ID: (id) => `${BACKEND_URL}/api/v1/item/${id}`,
+  GET_ITEMS: `${BACKEND_URL}/api/v1/item/`,
+  DELETE_ITEM: (id) => `${BACKEND_URL}/api/v1/item/${id}`,
 };

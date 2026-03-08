@@ -22,7 +22,7 @@ import {
 const itemRouter = Router();
 
 itemRouter.post(
-  "/add/:shopId",
+  "/add",
   authenticate,
   upload.single("image"),
   validateBody(addItemValidation),
