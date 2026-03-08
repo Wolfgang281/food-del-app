@@ -87,7 +87,6 @@ export const getShop = async (req, res, next) => {
   try {
     const { shopId } = req.params;
     const shop = await ShopModel.findOne({
-      _id: shopId,
       owner: userId,
     })
       .populate({

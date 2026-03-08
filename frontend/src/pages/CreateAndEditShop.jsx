@@ -1,24 +1,75 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { FaUtensils } from "react-icons/fa"; // ✅ added
 import { IoIosArrowRoundBack } from "react-icons/io";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { SHOP_ROUTES } from "../constants/endpoints";
+import axiosInstance from "../lib/axios";
+import { setShopData } from "../redux/slices/ownerSlice";
 
 function CreateAndEditShop() {
   const navigate = useNavigate();
+  const fileRef = useRef(null);
+
   const { shopData } = useSelector((state) => state.owner);
-  const { city: userCity, state: userState } = useSelector(
-    (state) => state.user,
-  );
+  const {
+    city: userCity,
+    state: userState,
+    address: userAddress,
+  } = useSelector((state) => state.user);
 
   const [name, setName] = useState(shopData ? shopData.name : "");
   const [city, setCity] = useState(shopData ? shopData.city : userCity || "");
   const [state, setState] = useState(
     shopData ? shopData.state : userState || "",
   );
-  const [address, setAddress] = useState(shopData ? shopData.address : "");
+  const [address, setAddress] = useState(
+    shopData ? shopData.address : userAddress || "",
+  );
   const [loading] = useState(false);
 
-  const handleSubmit = () => {};
+  const [previewImage, setPreviewImage] = useState(
+    shopData ? shopData.image : null,
+  );
+  const [uploadedImage, setUploadedImage] = useState(null);
+
+  const dispatch = useDispatch();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("city", city);
+      formData.append("state", state);
+      formData.append("address", address);
+      if (uploadedImage) {
+        formData.append("image", uploadedImage);
+      }
+
+      const { data } = shopData
+        ? await axiosInstance.patch(
+            SHOP_ROUTES.EDIT_SHOP(shopData._id),
+            formData,
+          )
+        : await axiosInstance.post(SHOP_ROUTES.CREATE_SHOP, formData);
+      console.log(data);
+
+      dispatch(setShopData(data.shop));
+      toast.success(data.message);
+      navigate("/");
+    } catch (error) {
+      console.log(error.response.data);
+      toast.error(error.response?.data?.message);
+    }
+  };
+
+  const handleImage = (e) => {
+    const file = e.target.files[0];
+    setUploadedImage(file);
+    setPreviewImage(URL.createObjectURL(file));
+  };
 
   return (
     <div className="min-h-screen w-full bg-stone-50 flex flex-col items-center px-4 py-10">
@@ -76,11 +127,14 @@ function CreateAndEditShop() {
               Shop Image
             </label>
 
-            {/* Preview or upload trigger */}
-            <div className="w-full h-36 rounded-xl border-2 border-dashed border-stone-200 bg-stone-50 hover:border-orange-300 hover:bg-orange-50/30 transition-all duration-200 cursor-pointer overflow-hidden flex items-center justify-center relative">
-              {/* {frontendImage ? (
+            {/* ✅ onClick triggers hidden file input */}
+            <div
+              onClick={() => fileRef.current.click()}
+              className="w-full h-36 rounded-xl border-2 border-dashed border-stone-200 bg-stone-50 hover:border-orange-300 hover:bg-orange-50/30 transition-all duration-200 cursor-pointer overflow-hidden flex items-center justify-center relative"
+            >
+              {previewImage ? (
                 <img
-                  src={frontendImage}
+                  src={previewImage}
                   alt="preview"
                   className="w-full h-full object-cover"
                 />
@@ -91,25 +145,24 @@ function CreateAndEditShop() {
                     Click to upload image
                   </span>
                 </div>
-              )} */}
+              )}
 
-              {/* Change overlay when image exists */}
-              {/* {frontendImage && (
+              {previewImage && (
                 <div className="absolute inset-0 bg-black/30 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
                   <span className="text-white text-xs font-semibold uppercase tracking-widest">
                     Change
                   </span>
                 </div>
-              )} */}
+              )}
             </div>
 
-            {/* <input
+            <input
               ref={fileRef}
               type="file"
               accept="image/*"
               className="hidden"
               onChange={handleImage}
-            /> */}
+            />
           </div>
 
           {/* City + State */}

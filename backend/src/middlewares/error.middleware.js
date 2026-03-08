@@ -28,7 +28,7 @@ export const errorHandler = (err, req, res, next) => {
     err.message = "Invalid token, Please login again!";
   }
 
-  res.status(err.statusCode).json({
+  return res.status(err.statusCode).json({
     success: false,
     message: err.message,
     errObject: err,

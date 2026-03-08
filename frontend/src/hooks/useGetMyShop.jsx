@@ -11,7 +11,8 @@ function useGetMyShop() {
     const fetchShop = async () => {
       try {
         const result = await axiosInstance.get(SHOP_ROUTES.GET_MY_SHOP);
-        dispatch(setShopData(result.data));
+        console.log("result: ", result);
+        dispatch(setShopData(result.data.shop));
       } catch (error) {
         console.log(error.response);
       }
