@@ -5,6 +5,7 @@ import { IoIosSearch } from "react-icons/io";
 import { RxCross2 } from "react-icons/rx";
 import { TbReceipt2 } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { AUTH_ROUTES } from "../constants/endpoints";
 import axiosInstance from "../lib/axios";
@@ -13,6 +14,8 @@ import { setUserData } from "../redux/slices/userSlice";
 function Navbar() {
   const [showSearch, setShowSearch] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
+
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
 
@@ -80,11 +83,17 @@ function Navbar() {
             {/* Owner: Add Item */}
             {userData.role === "owner" && shopData && (
               <>
-                <button className="hidden md:flex items-center gap-1.5 bg-orange-50 text-orange-500 hover:bg-orange-100 text-sm font-medium px-3.5 py-2 rounded-full transition-colors cursor-pointer">
+                <button
+                  className="hidden md:flex items-center gap-1.5 bg-orange-50 text-orange-500 hover:bg-orange-100 text-sm font-medium px-3.5 py-2 rounded-full transition-colors cursor-pointer"
+                  onClick={() => navigate("/add-item")}
+                >
                   <FaPlus size={13} />
                   Add Food Item
                 </button>
-                <button className="md:hidden w-9 h-9 flex items-center justify-center rounded-full bg-orange-50 text-orange-500 hover:bg-orange-100 transition-colors cursor-pointer">
+                <button
+                  className="md:hidden w-9 h-9 flex items-center justify-center rounded-full bg-orange-50 text-orange-500 hover:bg-orange-100 transition-colors cursor-pointer"
+                  onClick={() => navigate("/add-item")}
+                >
                   <FaPlus size={15} />
                 </button>
               </>

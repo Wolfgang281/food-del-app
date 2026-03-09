@@ -6,6 +6,7 @@ import useGetCurrentUser from "./hooks/useGetCurrentUser";
 import useGetMyShop from "./hooks/useGetMyShop";
 import AddItem from "./pages/AddItem";
 import CreateAndEditShop from "./pages/CreateAndEditShop";
+import EditItem from "./pages/EditItem";
 import ForgotPassword from "./pages/ForgotPassword";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -54,6 +55,11 @@ const App = () => {
       <Route
         path="/add-item"
         element={userData ? <AddItem /> : <Navigate to={"/login"} />}
+      />
+
+      <Route
+        path="/edit-item/:itemId"
+        element={userData ? <EditItem /> : <Navigate to={"/login"} />}
       />
     </Routes>
   );

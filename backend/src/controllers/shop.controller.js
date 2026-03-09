@@ -94,7 +94,7 @@ export const getShop = async (req, res, next) => {
       })
       .populate({
         path: "items",
-        options: { sort: { createdAt: -1 } },
+        options: { sort: { updatedAt: -1 } },
       });
     if (!shop) {
       return next(new ErrorResponse("Shop not found", 404));

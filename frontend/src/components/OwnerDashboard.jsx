@@ -2,11 +2,11 @@ import { FaPen, FaUtensils } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
-import OwnerItemCard from "./ownerItemCard";
+import OwnerItemCard from "./OwnerItemCard";
 
 function OwnerDashboard() {
   const { shopData } = useSelector((state) => state.owner);
-  console.log("shopData: ", shopData);
+  // console.log("shopData: ", shopData);
   const navigate = useNavigate();
 
   return (

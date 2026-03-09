@@ -2,6 +2,7 @@ import ItemModel from "../models/Item.model.js";
 import ShopModel from "../models/Shop.model.js";
 import ErrorResponse from "../utils/ApiError.util.js";
 import {
+  deleteFromCloudinary,
   getDataURLFromFile,
   getPublicIdFromURL,
   uploadToCloudinary,
@@ -51,8 +52,6 @@ export const addItem = async (req, res, next) => {
 };
 
 export const editItem = async (req, res, next) => {
-  //? image upload  { image: "clod"}
-  //? image not uploaded => ""
   try {
     let { name, foodType, price, category } = req.body;
     let itemId = req.params.itemId;
@@ -64,7 +63,6 @@ export const editItem = async (req, res, next) => {
       let dataURL = getDataURLFromFile(req.file);
       image = await uploadToCloudinary(dataURL, next);
       if (oldItem.image.includes("cloudinary")) {
-        //delete the image
         let publicId = getPublicIdFromURL(oldItem.image);
         await deleteFromCloudinary(publicId, next);
       }
@@ -84,7 +82,7 @@ export const editItem = async (req, res, next) => {
 
     const shop = await ShopModel.findOne({ owner: req.user._id }).populate({
       path: "items",
-      options: { sort: { createdAt: -1 } },
+      options: { sort: { updatedAt: -1 } },
     });
 
     if (!updatedItem) {
