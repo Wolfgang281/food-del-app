@@ -4,6 +4,7 @@ import { AuthLoader } from "./components/AuthLoader";
 import useGetCity from "./hooks/useGetCity";
 import useGetCurrentUser from "./hooks/useGetCurrentUser";
 import useGetMyShop from "./hooks/useGetMyShop";
+import useGetShopByCity from "./hooks/useGetShopsByCity";
 import AddItem from "./pages/AddItem";
 import CreateAndEditShop from "./pages/CreateAndEditShop";
 import EditItem from "./pages/EditItem";
@@ -14,11 +15,17 @@ import Register from "./pages/Register";
 import SSOCallback from "./pages/SSOCallback";
 
 const App = () => {
+  const { userData, loading } = useSelector((state) => state.user);
+
   useGetCurrentUser();
   useGetCity();
   useGetMyShop();
+  useGetShopByCity();
 
-  const { userData, loading } = useSelector((state) => state.user);
+  //   useEffect(() => {
+  //   if (!userData || userData.role !== "owner") return; // ← add this
+  //   // ... rest of your fetch logic
+  // }, [userData]); // ← make sure userData is in the dependency array
 
   if (loading) {
     return <AuthLoader />;

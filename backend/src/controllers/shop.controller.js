@@ -112,6 +112,7 @@ export const getShop = async (req, res, next) => {
 export const getShopByCity = async (req, res, next) => {
   try {
     const { city } = req.params;
+    console.log("city: ", city);
     const cityPattern = new RegExp(`^${city}$`, "i");
     const shops = await ShopModel.find({ city: cityPattern })
       .populate({

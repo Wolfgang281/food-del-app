@@ -4,6 +4,7 @@ import cors from "cors";
 import express from "express";
 
 import { FRONTEND_URL } from "./src/config/index.js";
+
 import { errorHandler } from "./src/middlewares/error.middleware.js";
 
 import authRoutes from "./src/routes/auth.route.js";

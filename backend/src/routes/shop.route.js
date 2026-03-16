@@ -33,6 +33,6 @@ shopRouter.patch(
 
 shopRouter.get("/get-my-shop", authenticate, getShop);
 
-shopRouter.get("/get-shop/:city", authenticate, getShopByCity);
+shopRouter.get("/get-shop-by-city/:city", authenticate, getShopByCity);
 
 export default shopRouter;
