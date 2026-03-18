@@ -29,6 +29,6 @@ export const ITEM_ROUTES = {
   ADD_ITEM: `${BACKEND_URL}/api/v1/item/add`,
   EDIT_ITEM: (id) => `${BACKEND_URL}/api/v1/item/edit/${id}`,
   GET_ITEM_BY_ID: (id) => `${BACKEND_URL}/api/v1/item/${id}`,
-  GET_ITEMS: `${BACKEND_URL}/api/v1/item/`,
+  GET_ITEMS_BY_CITY: (city) => `${BACKEND_URL}/api/v1/item/get-by-city/${city}`,
   DELETE_ITEM: (id) => `${BACKEND_URL}/api/v1/item/${id}`,
 };

@@ -1,12 +1,13 @@
 import { useRef, useState } from "react";
-// scrollbar hidden via inline style: scrollbarWidth:"none"
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import CategoryCard from "./CategoryCard";
 import FoodCard from "./FoodCard";
 import Navbar from "./Navbar";
 
-const MOCK_CATEGORIES = [
+// ── Static category list (for browse row) ────────────────────────
+const CATEGORIES = [
   {
     category: "Pizza",
     image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300",
@@ -31,64 +32,25 @@ const MOCK_CATEGORIES = [
     category: "Snacks",
     image: "https://images.unsplash.com/photo-1604508021597-f6fe54c4cd7a?w=300",
   },
-];
-const MOCK_SHOPS = [
   {
-    _id: "1",
-    name: "Spice Garden",
-    image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=300",
+    category: "Main Course",
+    image: "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=300",
   },
   {
-    _id: "2",
-    name: "Burger Palace",
-    image: "https://images.unsplash.com/photo-1552566626-52f8b828a9b4?w=300",
+    category: "Sandwiches",
+    image: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=300",
   },
   {
-    _id: "3",
-    name: "Pizza Hub",
-    image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=300",
-  },
-];
-const MOCK_ITEMS = [
-  {
-    _id: "1",
-    name: "Paneer Tikka",
-    price: 180,
-    category: "snacks",
-    foodType: "veg",
-    image: "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=300",
-    rating: { average: 4, count: 120 },
+    category: "Fast Food",
+    image: "https://images.unsplash.com/photo-1561758033-d89a9ad46330?w=300",
   },
   {
-    _id: "2",
-    name: "Chicken Burger",
-    price: 220,
-    category: "burgers",
-    foodType: "non-veg",
-    image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300",
-    rating: { average: 5, count: 89 },
-  },
-  {
-    _id: "3",
-    name: "Margherita Pizza",
-    price: 299,
-    category: "pizza",
-    foodType: "veg",
-    image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300",
-    rating: { average: 3, count: 54 },
-  },
-  {
-    _id: "4",
-    name: "Gulab Jamun",
-    price: 80,
-    category: "desserts",
-    foodType: "veg",
-    image: "https://images.unsplash.com/photo-1601303516534-bf4d7f2d4a15?w=300",
-    rating: { average: 4, count: 200 },
+    category: "North Indian",
+    image: "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=300",
   },
 ];
 
-// Reusable scroll row with wired buttons
+// ── Reusable scroll row ───────────────────────────────────────────
 function ScrollRow({ children, label, badge }) {
   const ref = useRef();
   const [showLeft, setShowLeft] = useState(false);
@@ -101,7 +63,6 @@ function ScrollRow({ children, label, badge }) {
     setShowRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
   };
 
-  // Check on mount
   const onRefMount = (el) => {
     ref.current = el;
     if (el) {
@@ -127,7 +88,7 @@ function ScrollRow({ children, label, badge }) {
             {label[1]}
           </h2>
         </div>
-        {badge && (
+        {badge != null && (
           <span className="text-xs font-semibold text-stone-400 bg-stone-100 px-2.5 py-1 rounded-full">
             {badge}
           </span>
@@ -135,7 +96,6 @@ function ScrollRow({ children, label, badge }) {
       </div>
 
       <div className="flex items-center gap-2">
-        {/* Left arrow — hidden when at start */}
         <button
           className={`shrink-0 w-8 h-8 bg-white border border-stone-200 rounded-full shadow-sm flex items-center justify-center text-stone-400 hover:text-orange-500 hover:border-orange-200 transition-all cursor-pointer ${
             showLeft
@@ -147,7 +107,6 @@ function ScrollRow({ children, label, badge }) {
           <FaChevronLeft size={11} />
         </button>
 
-        {/* Hide scrollbar cross-browser via inline style */}
         <div
           ref={onRefMount}
           className="flex-1 flex overflow-x-auto gap-3 pb-1"
@@ -156,7 +115,6 @@ function ScrollRow({ children, label, badge }) {
           {children}
         </div>
 
-        {/* Right arrow — hidden when at end */}
         <button
           className={`shrink-0 w-8 h-8 bg-white border border-stone-200 rounded-full shadow-sm flex items-center justify-center text-stone-400 hover:text-orange-500 hover:border-orange-200 transition-all cursor-pointer ${
             showRight
@@ -172,10 +130,26 @@ function ScrollRow({ children, label, badge }) {
   );
 }
 
+// ── Main component ────────────────────────────────────────────────
 function UserDashboard() {
-  const { city, shopsInMyCity } = useSelector((state) => state.user);
+  const { city, shopsInMyCity, itemsInMyCity } = useSelector(
+    (state) => state.user,
+  );
+  const navigate = useNavigate();
 
-  const [activeCategory, setActiveCategory] = useState("");
+  const [activeCategory, setActiveCategory] = useState("All");
+
+  // itemsInMyCity already scoped to city by API
+  const allItems = itemsInMyCity ?? [];
+
+  // Filter items by active category
+  const filteredItems =
+    activeCategory === "All"
+      ? allItems
+      : allItems.filter(
+          (item) =>
+            item.category === activeCategory.toLowerCase().replace(" ", "-"),
+        );
 
   return (
     <div className="w-full min-h-screen bg-stone-50 flex flex-col items-center pb-16">
@@ -201,7 +175,7 @@ function UserDashboard() {
 
         {/* ── Categories ── */}
         <ScrollRow label={["Browse", "What are you craving?"]}>
-          {MOCK_CATEGORIES.map((cate, index) => (
+          {CATEGORIES.map((cate, index) => (
             <CategoryCard
               key={index}
               name={cate.category}
@@ -215,10 +189,15 @@ function UserDashboard() {
         {/* ── Best Shops ── */}
         <ScrollRow
           label={["Near You", `Best shops in ${city}`]}
-          badge={`${shopsInMyCity} shops`}
+          badge={`${shopsInMyCity?.length ?? 0} shops`}
         >
-          {shopsInMyCity.map((shop, index) => (
-            <CategoryCard key={index} name={shop.name} image={shop.image} />
+          {shopsInMyCity?.map((shop, index) => (
+            <CategoryCard
+              key={index}
+              name={shop.name}
+              image={shop.image}
+              onClick={() => navigate(`/shop/${shop._id}`)}
+            />
           ))}
         </ScrollRow>
 
@@ -234,15 +213,27 @@ function UserDashboard() {
               </h2>
             </div>
             <span className="text-xs font-semibold text-stone-400 bg-stone-100 px-2.5 py-1 rounded-full">
-              {MOCK_ITEMS.length} items
+              {filteredItems.length} items
             </span>
           </div>
 
-          <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {MOCK_ITEMS.map((item, index) => (
-              <FoodCard key={index} data={item} />
-            ))}
-          </div>
+          {filteredItems.length === 0 ? (
+            <div className="w-full py-16 flex flex-col items-center text-center">
+              <p className="text-4xl mb-3">🍽️</p>
+              <p className="text-sm font-semibold text-stone-400">
+                No items found
+                {activeCategory !== "All"
+                  ? ` for ${activeCategory}`
+                  : " in your city"}
+              </p>
+            </div>
+          ) : (
+            <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {filteredItems.map((item, index) => (
+                <FoodCard key={index} data={item} />
+              ))}
+            </div>
+          )}
         </section>
       </div>
     </div>

@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { AuthLoader } from "./components/AuthLoader";
 import useGetCity from "./hooks/useGetCity";
 import useGetCurrentUser from "./hooks/useGetCurrentUser";
+import useGetItemsByCity from "./hooks/useGetItemsByCity";
 import useGetMyShop from "./hooks/useGetMyShop";
 import useGetShopByCity from "./hooks/useGetShopsByCity";
 import AddItem from "./pages/AddItem";
@@ -21,11 +22,7 @@ const App = () => {
   useGetCity();
   useGetMyShop();
   useGetShopByCity();
-
-  //   useEffect(() => {
-  //   if (!userData || userData.role !== "owner") return; // ← add this
-  //   // ... rest of your fetch logic
-  // }, [userData]); // ← make sure userData is in the dependency array
+  useGetItemsByCity();
 
   if (loading) {
     return <AuthLoader />;

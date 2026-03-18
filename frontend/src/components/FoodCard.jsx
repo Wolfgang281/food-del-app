@@ -8,13 +8,13 @@ import {
   FaStar,
 } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa6";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 // import { addToCart } from "../redux/userSlice";
 
 function FoodCard({ data }) {
   const [quantity, setQuantity] = useState(0);
-  const dispatch = useDispatch();
-  const { cartItems } = useSelector((state) => state.user);
+  // const dispatch = useDispatch();
+  const { cartItems, itemsInMyCity } = useSelector((state) => state.user);
 
   const renderStars = (rating) => {
     const stars = [];
@@ -83,6 +83,11 @@ function FoodCard({ data }) {
           <h2 className="text-sm font-bold text-stone-900 truncate mb-1">
             {data.name}
           </h2>
+          {data.shopName && (
+            <p className="text-[10px] font-medium text-stone-400 truncate mb-1">
+              🏪 {data.shopName}
+            </p>
+          )}
           <div className="flex items-center gap-1">
             {renderStars(data.rating?.average || 0)}
             <span className="text-[10px] text-stone-400 ml-0.5">
@@ -105,7 +110,7 @@ function FoodCard({ data }) {
             >
               <FaMinus size={10} />
             </button>
-            <span className="text-xs font-semibold text-stone-700 min-w-[16px] text-center">
+            <span className="text-xs font-semibold text-stone-700 min-w-4 text-center">
               {quantity}
             </span>
             <button
