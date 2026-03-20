@@ -8,13 +8,15 @@ import {
   FaStar,
 } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa6";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "../redux/slices/userSlice";
 // import { addToCart } from "../redux/userSlice";
 
 function FoodCard({ data }) {
   const [quantity, setQuantity] = useState(0);
-  // const dispatch = useDispatch();
-  const { cartItems, itemsInMyCity } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const { cartItems } = useSelector((state) => state.user);
+  // console.log("cartItems: ", cartItems);
 
   const renderStars = (rating) => {
     const stars = [];
@@ -36,17 +38,19 @@ function FoodCard({ data }) {
   const isInCart = cartItems?.some((i) => i.id === data._id);
 
   const handleAddToCart = () => {
-    // if (quantity > 0) {
-    //   dispatch(addToCart({
-    //     id: data._id,
-    //     name: data.name,
-    //     price: data.price,
-    //     image: data.image,
-    //     shop: data.shop,
-    //     quantity,
-    //     foodType: data.foodType,
-    //   }));
-    // }
+    if (quantity > 0) {
+      dispatch(
+        addToCart({
+          id: data._id,
+          name: data.name,
+          price: data.price,
+          image: data.image,
+          shop: data.shop,
+          quantity,
+          foodType: data.foodType,
+        }),
+      );
+    }
   };
 
   return (

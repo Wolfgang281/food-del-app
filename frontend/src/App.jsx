@@ -7,6 +7,8 @@ import useGetItemsByCity from "./hooks/useGetItemsByCity";
 import useGetMyShop from "./hooks/useGetMyShop";
 import useGetShopByCity from "./hooks/useGetShopsByCity";
 import AddItem from "./pages/AddItem";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
 import CreateAndEditShop from "./pages/CreateAndEditShop";
 import EditItem from "./pages/EditItem";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -64,6 +66,16 @@ const App = () => {
       <Route
         path="/edit-item/:itemId"
         element={userData ? <EditItem /> : <Navigate to={"/login"} />}
+      />
+
+      <Route
+        path="/cart"
+        element={userData ? <Cart /> : <Navigate to={"/login"} />}
+      />
+
+      <Route
+        path="/checkout"
+        element={userData ? <Checkout /> : <Navigate to={"/login"} />}
       />
     </Routes>
   );

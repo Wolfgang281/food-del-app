@@ -19,7 +19,7 @@ function Navbar() {
 
   const dispatch = useDispatch();
 
-  const { userData, city } = useSelector((state) => state.user);
+  const { userData, city, cartItems } = useSelector((state) => state.user);
   const { shopData } = useSelector((state) => state.owner);
 
   const handleLogout = async () => {
@@ -33,8 +33,6 @@ function Navbar() {
       toast.error(error?.response?.data?.message);
     }
   };
-
-  const cartItems = [1, 2, 3];
 
   return (
     <>
@@ -114,7 +112,7 @@ function Navbar() {
 
             {/* User: Cart */}
             {userData.role === "user" && (
-              <button className="relative w-9 h-9 flex items-center justify-center rounded-full bg-orange-50 text-orange-500 hover:bg-orange-100 transition-colors cursor-pointer">
+              <button className="relative w-9 h-9 flex items-center justify-center rounded-full bg-orange-50 text-orange-500 hover:bg-orange-100 transition-colors cursor-pointer" onClick={()=> navigate("/cart")}>
                 <FiShoppingCart size={17} />
                 {cartItems.length > 0 && (
                   <span className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
