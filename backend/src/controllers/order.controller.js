@@ -25,11 +25,13 @@ export const placeOrder = async (req, res, next) => {
             new ErrorResponse(`Shop with id ${shopId} not found`, 404),
           );
         }
+
         const items = groupItemsByShop[shopId];
         const subtotal = items.reduce(
           (sum, item) => sum + Number(item.price) * Number(item.quantity),
           0,
         );
+
         return {
           shop: shop._id,
           owner: shop.owner._id,
@@ -37,7 +39,7 @@ export const placeOrder = async (req, res, next) => {
           shopOrderItems: items.map((item) => {
             console.log("item: ", item);
             return {
-              item: item._id,
+              item: item.id,
               price: item.price,
               quantity: item.quantity,
               name: item.name,
@@ -46,6 +48,7 @@ export const placeOrder = async (req, res, next) => {
         };
       }),
     );
+
     const newOrder = await OrderModel.create({
       user: req.user._id,
       paymentMethod,
@@ -148,7 +151,7 @@ export const updateOrderStatus = async (req, res, next) => {
 
     await order.save();
 
-    // ✅ populate from parent, NOT from subdocument
+    //  populate from parent, NOT from subdocument
     await order.populate("shopOrders.shopOrderItems.item", "name image price");
 
     return res.status(200).json({

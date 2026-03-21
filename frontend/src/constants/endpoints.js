@@ -32,3 +32,7 @@ export const ITEM_ROUTES = {
   GET_ITEMS_BY_CITY: (city) => `${BACKEND_URL}/api/v1/item/get-by-city/${city}`,
   DELETE_ITEM: (id) => `${BACKEND_URL}/api/v1/item/${id}`,
 };
+
+export const ORDER_ROUTES = {
+  PLACE_ORDER: `${BACKEND_URL}/api/v1/order/place`,
+};
