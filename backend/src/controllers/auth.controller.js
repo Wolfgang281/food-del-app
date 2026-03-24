@@ -45,7 +45,7 @@ export const login = async (req, res, next) => {
     const token = generateToken(user._id);
     res.cookie("token", token, {
       secure: false,
-      sameSite: "strict",
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     });
@@ -64,7 +64,7 @@ export const logout = (req, res, next) => {
   try {
     res.clearCookie("token", {
       secure: false,
-      sameSite: "strict",
+      sameSite: "none",
       maxAge: 0,
       httpOnly: true,
     });
